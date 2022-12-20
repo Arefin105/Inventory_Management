@@ -36,13 +36,13 @@ class CustomerController extends Controller
     public function store(Request $request)
     {
         $customer = Customer::where('mail', '=', $request->input('mail'))->first();
-        if ($customer->count() > 0) {
+        if ($customer) {
             return response()->json(['msg' => 'Customer already exist']);
         }
         $this->validate($request, [
             'name' => 'required',
-            'phone' => 'required|numeric|unique:customers,phone',
-            'mail' => 'required|email|unique:customers,mail',
+            'phone' => 'required|numeric',
+            'mail' => 'required|email',
             'address' => 'required',
         ]);
         $data =[

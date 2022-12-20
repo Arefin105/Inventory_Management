@@ -14,7 +14,7 @@ class OrderController extends Controller
      */
     public function index()
     {
-        //
+        return Order::all();
     }
 
     /**
@@ -35,7 +35,54 @@ class OrderController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $this->validate($request, [
+            'product_id'=> 'required',
+            'customer_name' => 'required',
+            'address' => 'required',
+            'phone' => 'required',
+            'quantity' => 'required',
+            'price'=> 'required',
+            'image' => 'required',
+            'weight'=> 'required',
+            'discount'=> 'required',
+            'area' => 'required',
+            'delivery_media_id' => 'required',
+        ]);
+
+        $image = $request->file('image');
+        if(isset($image)){
+            $id = Order::count();
+            if($id > 0){
+                $id = Order::latest()->first()->id;
+                $id += 1;
+            }
+            else{
+                $id = 1;
+            }
+
+            $imageName = 'order'.'-'.$id.'.webp';
+            $height = 800;
+            $width = 800;
+            $path = '/images/uploads/orders/';
+            $image-> move(public_path('public/Images/uploads/orders/'), $imageName);
+        }
+
+        $data = [
+            'product_id'=> $request->input('product_id'),
+            'customer_name' => $request->input('customer_name'),
+            'address' => $request->input('address'),
+            'phone' => $request->input('phone'),
+            'quantity' => $request->input('quantity'),
+            'price'=> $request->input('price'),
+            'image'=> $imageName,
+            'weight'=> $request->input('weight'),
+            'discount'=> $request->input('discount'),
+            'area' => $request->input('area'),
+            'delivery_media_id' => $request->input('delivery_media_id'),
+        ];
+
+        Order::create($data);
+        return response()->json(['msg' => 'Order Created Successfully']);
     }
 
     /**
